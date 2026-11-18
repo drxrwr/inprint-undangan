@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inprint Undangan — Katalog Undangan Pernikahan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f2ea; --card:#fffdf9; --ink:#2b2420; --muted:#7a6d62;
+    --gold:#b08a4a; --gold-soft:#e9dcc4; --line:#e6dccd;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Jost,system-ui,sans-serif;line-height:1.5}
+  header{text-align:center;padding:48px 20px 28px}
+  header .eyebrow{letter-spacing:.3em;text-transform:uppercase;font-size:12px;color:var(--gold);font-weight:600}
+  header h1{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(34px,7vw,56px);margin:8px 0 6px;line-height:1.05}
+  header p{max-width:520px;margin:0 auto;color:var(--muted);font-size:15px}
+  .how{max-width:560px;margin:22px auto 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:14px;color:var(--ink)}
+  .how b{color:var(--gold)}
+  main{max-width:1100px;margin:0 auto;padding:12px 16px 60px;display:grid;gap:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 2px 14px rgba(60,40,20,.05)}
+  .head{display:flex;align-items:center;gap:14px;padding:16px 18px 12px}
+  .num{flex:0 0 auto;width:54px;height:54px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:700}
+  .title{flex:1;min-width:0}
+  .title h2{margin:0;font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:600;line-height:1.15}
+  .title span{font-size:13px;color:var(--muted)}
+  .pick{flex:0 0 auto;border:1px solid var(--gold);background:transparent;color:var(--gold);font:600 13px Jost,sans-serif;padding:9px 14px;border-radius:999px;cursor:pointer}
+  .pick.done{background:var(--gold);color:#fff}
+  .photos{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 14px}
+  .hero{margin:0 12px 8px;border-radius:12px}
+  .photos figure{aspect-ratio:4/3}
+  .photos figure img{width:100%;height:100%;object-fit:contain}
+  @media(min-width:900px){main{grid-template-columns:1fr 1fr}}
+  figure{margin:0;position:relative;border-radius:12px;overflow:hidden;background:#f4efe7;cursor:zoom-in}
+  figure img{display:block;width:100%;height:auto}
+  figcaption{position:absolute;left:8px;top:8px;background:rgba(255,253,249,.92);color:var(--ink);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
+  .lb{position:fixed;inset:0;background:rgba(15,12,10,.94);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+  .lb.open{display:flex}
+  .lb img{max-width:100%;max-height:88vh;border-radius:8px}
+  .lb .cap{position:absolute;top:14px;left:0;right:0;text-align:center;color:#fff;font-size:14px;letter-spacing:.05em}
+  .lb .x{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#000;border:0;border-radius:999px;padding:10px 22px;font:600 14px Jost,sans-serif;cursor:pointer}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;transition:transform .25s;z-index:20;max-width:90vw;text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Inprint Undangan</div>
+  <h1>Undangan Pernikahan</h1>
+  <p>10 pilihan desain. Setiap nomor menampilkan tampilan undangan, lengkap dengan sisi depan dan belakangnya.</p>
+  <div class="how">Suka yang mana? Cukup sebutkan <b>nomor modelnya</b>, misalnya “Model No. 4”. Ketuk foto untuk memperbesar.</div>
+</header>
+
+<main id="list"></main>
+
+<footer>Warna hasil cetak bisa sedikit berbeda dari foto.</footer>
+
+<div class="lb" id="lb"><div class="cap" id="lbcap"></div><img id="lbimg" alt=""><button class="x" id="lbx">Tutup</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const models = [
+  {n:1,  name:"Save the Date Hitam Emas",   desc:"Hitam elegan, aksen daun emas · bagian dalam marmer", land:true},
+  {n:2,  name:"Floral Cokelat & Salmon",    desc:"Amplop cokelat motif bunga · dalam salmon",          land:false},
+  {n:3,  name:"Navy Marble Wax Seal",       desc:"Marmer biru-emas dengan segel lilin",                 land:false},
+  {n:4,  name:"Lotus Biru Langit",          desc:"Bunga teratai garis, nuansa biru lembut",             land:false},
+  {n:5,  name:"The Wedding Mawar Biru",     desc:"Abu gelap, bingkai belah ketupat & mawar biru",       land:true},
+  {n:6,  name:"Navy Rose Heksagon",         desc:"Biru navy, bingkai heksagon emas",                    land:true},
+  {n:7,  name:"Rustic Daun Hijau",          desc:"Amplop lipat, sapuan hijau-cokelat & segel lilin",    land:true},
+  {n:8,  name:"Peach Blossom",              desc:"Peach lembut, bunga & segel lilin emas",              land:false},
+  {n:9,  name:"Wayang Klasik",              desc:"Nuansa Jawa, gunungan & siluet wayang",               land:true},
+  {n:10, name:"Pampas Rustic Peach",        desc:"Peach hangat, pampas & bunga kering",                 land:true},
+];
+const pad = n => String(n).padStart(2,"0");
+const list = document.getElementById("list");
+list.innerHTML = models.map(m => `
+  <article class="card" id="model-${m.n}">
+    <div class="head">
+      <div class="num">${m.n}</div>
+      <div class="title"><h2>${m.name}</h2><span>${m.desc}</span></div>
+      <button class="pick" data-n="${m.n}">Pilih</button>
+    </div>
+    <figure class="hero" data-src="img/m${pad(m.n)}.jpg" data-cap="No. ${m.n} · ${m.name}"><img loading="lazy" src="img/m${pad(m.n)}.jpg" alt="Model ${m.n}"></figure>
+    <div class="photos">
+      <figure data-src="img/${pad(m.n)}a.jpg" data-cap="No. ${m.n} · Depan"><img loading="lazy" src="img/${pad(m.n)}a.jpg" alt="Model ${m.n} depan"><figcaption>Depan</figcaption></figure>
+      <figure data-src="img/${pad(m.n)}b.jpg" data-cap="No. ${m.n} · Belakang"><img loading="lazy" src="img/${pad(m.n)}b.jpg" alt="Model ${m.n} belakang"><figcaption>Belakang</figcaption></figure>
+    </div>
+  </article>`).join("");
+
+const lb=document.getElementById("lb"), lbimg=document.getElementById("lbimg"), lbcap=document.getElementById("lbcap");
+list.addEventListener("click", async e => {
+  const fig = e.target.closest("figure");
+  if (fig){ lbimg.src=fig.dataset.src; lbcap.textContent=fig.dataset.cap; lb.classList.add("open"); return; }
+  const btn = e.target.closest(".pick");
+  if (btn){
+    document.querySelectorAll(".pick").forEach(b=>{b.classList.remove("done");b.textContent="Pilih"});
+    btn.classList.add("done"); btn.textContent="Dipilih ✓";
+    const text = `Saya pilih undangan Model No. ${btn.dataset.n}`;
+    let msg = `Model No. ${btn.dataset.n} dipilih — sebutkan nomor ini ke kami`;
+    try { await navigator.clipboard.writeText(text); msg = `Teks “${text}” tersalin, tinggal kirim ke kami`; } catch(_){}
+    toast(msg);
+  }
+});
+lb.addEventListener("click", e => { if (e.target!==lbimg) lb.classList.remove("open"); });
+let t; function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");clearTimeout(t);t=setTimeout(()=>el.classList.remove("show"),2800);}
+</script>
+</body>
+</html>
